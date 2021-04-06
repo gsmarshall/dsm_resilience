@@ -278,6 +278,18 @@ select id, ward_name, fp_area, sum as build_area, sum(area_sqkm) as rds_area fro
 flood_imperv_rds group by id, ward_name, fp_area, sum
 
 
+-- these three steps can be done at once with the following query: (haven't tried it with the case statement, but works fine without it)
+-- could also try including the dsm_wards_flood geom column in order to keep it spatial?
+create table fp_impervious as
+  (select id, ward_name, fp_area, case when sum(area_sqkm) is not null then sum(area_sqkm) else 0 end as build_area from
+    (select dsm_wards_flood.id, dsm_wards_flood.ward_name, dsm_wards_flood.area_sqkm as fp_area, a.area_sqkm from
+    dsm_wards_flood left join
+		(select dsm_wards_flood.id, osm_buildings.area_sqkm, st_intersection(osm_buildings.utmway, dsm_wards_flood.geom) as geom
+		from osm_buildings inner join dsm_wards_flood on st_intersects(osm_buildings.utmway, dsm_wards_flood.geom)) as a
+		on dsm_wards_flood.id = a.id) as b
+  group by b.id, b.ward_name, b.fp_area)
+
+
 -- add impervious areas and Summarize
 alter table flood_imperv_grp
 add column imperv_area real,
@@ -296,13 +308,11 @@ dsm_wards_flood left join flood_imperv_grp on dsm_wards_flood.id = flood_imperv_
 
 
 -- compound:
-create table wards_impervious as
-  select dsm_wards.*, sum(a.area_sqkm) as build_area, sum(b.area_sqkm) as road_area, build_area + road_area as imperv_area from
-  dsm_wards left join
-  (select dsm_wards.id, osm_buildings.area_sqkm, st_intersection(osm_buildings.utmway, dsm_wards.utmgeom) as geom
-  from osm_buildings left join dsm_wards on st_intersects(osm_buildings.utmway, dsm_wards.utmgeom)) as a on dsm_wards.id = a.id
-  group by id
-  left join
-  (select dsm_wards.id, osm_buildings.area_sqkm, st_intersection(roads_clipped.geom01, dsm_wards.utmgeom) as geom
-  from roads_clipped left join dsm_wards on st_intersects(roads_clipped.geom01, dsm_wards.utmgeom)) as b on dsm_wards.id = b.id
-  group by id
+create table fp_impervious as
+  (select id, ward_name, fp_area, sum(area_sqkm) from
+    (select dsm_wards_flood.id, dsm_wards_flood.ward_name, dsm_wards_flood.area_sqkm as fp_area, a.area_sqkm from
+    dsm_wards_flood left join a on dsm_wards_flood.id = a.id) as b
+    from
+      (select dsm_wards_flood.id, osm_buildings.area_sqkm, st_intersection(osm_buildings.utmway, dsm_wards_flood.geom) as geom
+      from osm_buildings inner join dsm_wards_flood on st_intersects(osm_buildings.utmway, dsm_wards_flood.geom)) as a
+  group by b.id, b.ward_name, b.fp_area) as c
