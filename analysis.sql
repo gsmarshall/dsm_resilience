@@ -235,12 +235,6 @@ ADD COLUMN area_sqkm real;
 UPDATE osm_buildings
 SET area_sqkm = st_area(utmway) / (1000 * 1000);
 
-ALTER TABLE roads_clipped
-ADD COLUMN area_sqkm real;
-
-UPDATE roads_clipped
-SET area_sqkm = st_area(geom01) / (1000 * 1000);
-
 
 -- intersect with flooded areas of each ward
 create table flood_buildings as
