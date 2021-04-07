@@ -3,7 +3,7 @@ layout: page
 title: Impervious Landcover in Flood-Prone Areas of Dar es Salaam
 ---
 
-![floodplain map](assets/flood)
+![floodplain map](assets/flooding.png)
 
 ## Question and Overview
 
@@ -210,7 +210,7 @@ dsm_wards_flood left join flood_imperv_grp on dsm_wards_flood.id = flood_imperv_
 
 
 ## Results
-![impervious surface map](assets/map)
+![impervious surface map](assets/map.png)
 
 A web map summarizing our results is available [here](assets/qgis2web_2021_04_06-22_47_19_571538). Our SQL query yielded mixed results. While we were successful in reaching a result, a closer inspection of the results shows that our calculated percentage of impervious area per floodplain is pretty misleading. We had difficulty successfully unioning our impervious surfaces together, which led to an overestimation of impervious surfaces in some instances. For example, the ward of Kariakoo had a 261% impervious surface, which is impossible. This ward has a small sliver of floodplain in its western border, with a road running right through it. We also made a blanket categorization about the width of all the roads in Dar es Salaam in our buffer step, which could over or underestimate the total percentage of impervious surface.
 
