@@ -35,12 +35,6 @@ SET utmgeom = ST_Transform(geom, 32737);
 ALTER TABLE dsm_wards
 DROP COLUMN geom;
 
--- calculate total area for each ward
-ALTER TABLE dsm_wards
-ADD COLUMN area_sqkm real;
-
-UPDATE dsm_wards
-SET area_sqkm = st_area(utmgeom) / (1000 * 1000);
 
 -- intersect wards and flood areas
 CREATE TABLE dsm_wards_flood as
@@ -48,9 +42,15 @@ SELECT dsm_wards.id, dsm_wards.ward_name, dsm_wards.district_n, dsm_wards.distri
 FROM dsm_wards INNER JOIN floodsimple
 ON st_intersects(dsm_wards.utmgeom, floodsimple.geom);
 
+-- calculate area of flood prone regions
+ALTER TABLE dsm_wards_flood
+ADD COLUMN fp_area real;
+
+UPDATE dsm_wards_flood
+SET fp_area = st_area(geom) / (1000 * 1000);
+
 
 -- ==================== ROADS LAYER ======================
--- would be cool to do some of the following in one query - ask joe about this in class?
 -- copy roads into your schema so you can change it
 CREATE TABLE osm_roads AS
 SELECT osm_id, way FROM
@@ -73,7 +73,6 @@ FROM osm_roads
 ALTER TABLE lab_roads_buffered
 DROP COLUMN geom;
 
-
 -- clip the roads to the wards
 CREATE TABLE roads_clipped
 AS
@@ -84,7 +83,6 @@ ON st_intersects(roads_buffered.geom, dsm_wards.utmgeom);
 --drop the old geometries
 ALTER TABLE roads_clipped
 DROP COLUMN geom;
--- weird thing: adding the whole roads_clipped layer to the map works fine, but selecting 1000 features and trying ot add those doesnt, it shows up without any geometry
 
 
 -- ===================== BUILDINGS LAYER ============================
@@ -228,13 +226,6 @@ FROM lab_impervious_surfaces;
 -- this will over count in areas where our road buffer overlaps with our buildings, but this is not likely to be significant, and we have undercounted
 -- other impervious surfaces
 
--- calculate area
-ALTER TABLE osm_buildings
-ADD COLUMN area_sqkm real;
-
-UPDATE osm_buildings
-SET area_sqkm = st_area(utmway) / (1000 * 1000);
-
 
 -- intersect with flooded areas of each ward
 create table flood_buildings as
@@ -256,6 +247,13 @@ add column area_sqkm real;
 
 update flood_roads
 set area_sqkm = st_area(geom) / (1000000)
+
+-- calculate area
+ALTER TABLE osm_buildings
+ADD COLUMN area_sqkm real;
+
+UPDATE osm_buildings
+SET area_sqkm = st_area(utmway) / (1000 * 1000);
 
 
 -- join floodplain buildings to floodplains layer
