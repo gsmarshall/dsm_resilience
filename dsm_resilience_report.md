@@ -21,6 +21,8 @@ Building footprints and road centerlines were drawn from Open Street Map and pre
 
 The raw data is packaged in four separate layers: flood scenarios, city wards, OSM polygons, and OSM roads. After cleaning and reprojecting each layer, we intersected the buildings from the polygons layer and the roads layer with the flood scenarios layer to extract only the roads and buildings within flood-prone areas. We then calculated the area of each of these polygons and grouped them by ward, summarizing the area of roads and buildings separately. Finally, we added these values together and computed the percent impervious land cover by dividing the sum by the total area of the floodplain.
 
+All code needed to complete the analysis is presented below along with a written outline of each section, and can also be viewed in full by downloading [analysis.sql](assets/analysis.sql).
+
 ### Data Preparation and Cleaning
 
 We defined flood prone areas as any region with any likely flood depth according to the Resilience Academy flood scenarios layer. Since this definition makes the distinctions between likely flood depths defined by the flood scenarios layer irrelevant, we simplified the data to remove these distinctions. We then reprojected the wards layer and intersected it with the simplified flood layer in order to find the flood prone areas of each ward, and calculated the area of these regions.
