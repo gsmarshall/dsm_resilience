@@ -9,12 +9,6 @@ An area is considered flood-prone if it is covered by any part of the flood scen
 Make sure you create a spatial index for each new layer you create before running any new queries on it
 */
 
-/* 4/5 notes:
-LIST OF RELEVANT LAYERS:
-raw: wards, flood, planet_osm_roads
-derived: dsm_wards, dsm_wards_flood, osm_roads, roads_buffered, roads_clipped
-
-*/
 /* ------------ Cleaning/preparing data --------------------- */
 
 -- dissolve flood geometries to make them simpler - we only care if an area has ANY flood Risk
@@ -103,6 +97,9 @@ DROP COLUMN way;
 
 
 -- ======================= COMBINING LAYERS ========================
+/* the following queries represent a few of our attempts to union the buildings and roads layers. None were successful and they are not included
+in the analysis, but we have included them here to provide potential future students with a starting point from which to develop a better method */
+
 /*
 -- our buildings layer has a huge number of features, so it could be useful to test our overlay on a subset of the features before we send it on
 -- all million+ features
@@ -276,11 +273,10 @@ select id, ward_name, fp_area, sum as build_area, sum(area_sqkm) as rds_area fro
 flood_imperv_rds group by id, ward_name, fp_area, sum
 
 
--- these three steps can be done at once with the following query: (haven't tried it with the case statement, but works fine without it)
--- could also try including the dsm_wards_flood geom column in order to keep it spatial?
+-- these three steps can be done at once with the following query
 create table fp_impervious as
   (select id, ward_name, fp_area, case when sum(area_sqkm) is not null then sum(area_sqkm) else 0 end as build_area from
-    (select dsm_wards_flood.id, dsm_wards_flood.ward_name, dsm_wards_flood.area_sqkm as fp_area, a.area_sqkm from
+    (select dsm_wards_flood.id, dsm_wards_flood.ward_name, dsm_wards_flood.fp_area, a.area_sqkm from
     dsm_wards_flood left join
 		(select dsm_wards_flood.id, osm_buildings.area_sqkm, st_intersection(osm_buildings.utmway, dsm_wards_flood.geom) as geom
 		from osm_buildings inner join dsm_wards_flood on st_intersects(osm_buildings.utmway, dsm_wards_flood.geom)) as a
@@ -299,18 +295,8 @@ set imperv_area = build_area + rds_area;
 update flood_imperv_grp
 set pct_imperv = (imperv_area / fp_area) * 100;
 
+
 -- finally, join the results back to the floodplain layer so we can visualize them
 create table flood_plains_impervious as
 select dsm_wards_flood.ward_name, dsm_wards_flood.geom, flood_imperv_grp.fp_area, flood_imperv_grp.imperv_area, flood_imperv_grp.pct_imperv from
 dsm_wards_flood left join flood_imperv_grp on dsm_wards_flood.id = flood_imperv_grp.id
-
-
--- compound:
-create table fp_impervious as
-  (select id, ward_name, fp_area, sum(area_sqkm) from
-    (select dsm_wards_flood.id, dsm_wards_flood.ward_name, dsm_wards_flood.area_sqkm as fp_area, a.area_sqkm from
-    dsm_wards_flood left join a on dsm_wards_flood.id = a.id) as b
-    from
-      (select dsm_wards_flood.id, osm_buildings.area_sqkm, st_intersection(osm_buildings.utmway, dsm_wards_flood.geom) as geom
-      from osm_buildings inner join dsm_wards_flood on st_intersects(osm_buildings.utmway, dsm_wards_flood.geom)) as a
-  group by b.id, b.ward_name, b.fp_area) as c
