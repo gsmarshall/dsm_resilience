@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Impervious Landcover in Flood-Prone Ares of Dar es Salaam
+title: Impervious Landcover in Flood-Prone Areas of Dar es Salaam
 ---
 
 ## Question and Overview
