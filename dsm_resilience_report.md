@@ -1,14 +1,17 @@
-# Impervious Landcover in Flood-Prone Ares of Dar es Salaam
+---
+layout: page
+title: Impervious Landcover in Flood-Prone Ares of Dar es Salaam
+---
 
 ## Question and Overview
 
-This analysis is designed to assess how land cover in flood prone areas may impact urban resilience to climate change in Dar es Salaam, Tanzania. We quantified the amount of impervious land cover relative to the flood prone area of each ward of the city by using building footprints and road centerlines as a proxy for impervious surfaces. We found significant variation in the amount of impervious land cover in flood-prone areas across different wards, with densely populated, coastal areas towards the center of the city having much more heavily developed floodplains. However, since our question was so simple and we encountered significant difficulties performing the analysis, we do not feel that these findings carry much weight.
+This analysis is designed to assess how land cover in flood prone areas may impact urban resilience to climate change in Dar es Salaam, Tanzania. Using [PostGIS](https://postgis.net/) tools with a [PostgreSQL](https://www.postgresql.org/) server, we quantified the amount of impervious land cover relative to the flood prone area of each ward of the city by using building footprints and road centerlines as a proxy for impervious surfaces. We found significant variation in the amount of impervious land cover in flood-prone areas across different wards, with densely populated, coastal areas towards the center of the city having much more heavily developed floodplains. However, since our question was so simple and we encountered significant difficulties performing the analysis, we do not feel that these findings carry much weight.
 
 ## Data
 
 The data for this analysis is drawn from [Open Street Map](https://www.openstreetmap.org/) and [Resilience Academy](https://resilienceacademy.ac.tz/), a Tanzania-based project that aims to provide reliable, publicly accessible data and analysis to mitigate the impacts of climate change in developing cities. Both the Open Street Map and Resilience Academy data were created in collaboration with [Ramani Huria](https://ramanihuria.org/en/about-us/), a community mapping project based in Dar es Salaam.
 
-Flood prone areas are derived from [Dar es Salaam Flood Scenario](https://geonode.resilienceacademy.ac.tz/maps/352) (**this link isn't quite what we want but the real one seems to be down) data created by Resilience Academy. This layer was created by analyzing a detailed elevation model of the city, and is not based on historic flood events.
+Flood prone areas are derived from [Dar es Salaam Flood Scenario](https://geonode.resilienceacademy.ac.tz/maps/352) data created by Resilience Academy. This layer was created by analyzing a detailed elevation model of the city, and is not based on historic flood events.
 
 [Administrative wards boundaries](https://geonode.resilienceacademy.ac.tz/layers/geonode_data:geonode:dar_es_salaam_administrative_wards) were provided by Resilience Academy. These data were compiled by the National Bureau of Statistics and represent the official boundaries used to collect census data. They were edited by the Ramani Huria team to improve completeness and are generally reliable, though some inconsistencies may remain.
 
