@@ -4,10 +4,11 @@ title: Impervious Landcover in Flood-Prone Areas of Dar es Salaam
 ---
 
 ![floodplain map](assets/flooding.png)
+Authors: Sam Marshall and Hannah Rigdon
 
 ## Question and Overview
 
-This analysis is designed to assess how land cover in flood prone areas may impact urban resilience to climate change in Dar es Salaam, Tanzania. Using [PostGIS](https://postgis.net/) tools with a [PostgreSQL](https://www.postgresql.org/) server, we quantified the amount of impervious land cover relative to the flood prone area of each ward of the city by using building footprints and road centerlines as a proxy for impervious surfaces. We found significant variation in the amount of impervious land cover in flood-prone areas across different wards, with densely populated, coastal areas towards the center of the city having much more heavily developed floodplains. However, since our question was so simple and we encountered significant difficulties performing the analysis, we do not feel that these findings carry much weight.
+This analysis is designed to assess how land cover in flood prone areas may impact urban resilience to climate change in Dar es Salaam, Tanzania. Using [PostGIS](https://postgis.net/) tools with a [PostgreSQL](https://www.postgresql.org/) server, we quantified the amount of impervious land cover relative to the flood prone area of each ward of the city by using building footprints and road centerlines as a proxy for impervious surfaces. We found significant variation in the amount of impervious land cover in flood-prone areas across different wards, with densely populated, coastal areas towards the center of the city having much more heavily developed floodplains. The detail and specificity of these findings is limited by the simplicity of our methods and challenges we encountered performing the analysis, but they may have use as a coarse, rapidly accessible tool for urban planning.
 
 ## Data
 
@@ -210,8 +211,15 @@ dsm_wards_flood left join flood_imperv_grp on dsm_wards_flood.id = flood_imperv_
 
 
 ## Results
-![impervious surface map](assets/map.png)
+[![impervious surface map](assets/map.png)](assets/qgis2web_2021_04_06-22_47_19_571538)
+_Proportion of floodplains covered by impervious surfaces. A web map summarizing our results is available [here](assets/qgis2web_2021_04_06-22_47_19_571538)_
 
-A web map summarizing our results is available [here](assets/qgis2web_2021_04_06-22_47_19_571538). Our SQL query yielded mixed results. While we were successful in reaching a result, a closer inspection of the results shows that our calculated percentage of impervious area per floodplain is pretty misleading. We had difficulty successfully unioning our impervious surfaces together, which led to an overestimation of impervious surfaces in some instances. For example, the ward of Kariakoo had a 261% impervious surface, which is impossible. This ward has a small sliver of floodplain in its western border, with a road running right through it. We also made a blanket categorization about the width of all the roads in Dar es Salaam in our buffer step, which could over or underestimate the total percentage of impervious surface.
+Our SQL query yielded mixed results. While we were successful in reaching a result, a closer inspection shows that our calculated percentage of impervious area per floodplain may be misleading in certain areas. We had difficulty successfully unioning our impervious surfaces together, which led to an overestimation of impervious surfaces in these areas. For example, the ward of Kariakoo had a 261% impervious surface, which is impossible. This ward has a small sliver of floodplain in its western border with a road running right through it, which meant that the buffered road occupied a far greater area than the actual floodplain. We also made a blanket categorization about the width of all the roads in Dar es Salaam in our buffer step, which could contribute to over- or underestimating the total percentage of impervious surface.
+
+These issues stem in large part from our simple methodology and limited experience with SQL, but also reflect broader difficulties with urban planning, disaster management, and using volunteered geographic information. In a dense, heavily developed city like Dar es Salaam, analyses such as this one must be extremely sensitive and detailed in order to avoid errors such as the ones we encountered. Rather than commit to completely avoiding such errors or ignoring the results of a flawed analysis like this one, it is more productive to maintain an awareness of the uncertainty and spatial variability inherent in geographic studies and apply the results accordingly.
 
 While we had difficulty adjusting to the new software environment of SQL, we recognize its value in allowing us to work with large data sets that would be impossible to analyze in desktop GIS. We feel that spending more time with SQL and query-based analysis would have improved both the quality of our analysis and its value as an educational tool for future users of this software - we spent so much time troubleshooting errors that we were left with little time to make our analysis more robust or optimize it by constructing compound queries. While our results are not as meaningful or significant as we had hoped, the experience of designing and implementing the analysis was valuable and we look forward to getting more experience with spatial SQL.
+
+
+### Acknowledgements
+Thanks to Professor [Joseph Holler](https://github.com/josephholler) for providing source materials, tutorials, and guidance for this project, to [Kufre Udoh](https://kufreu.github.io/) for help debugging queries, and especially to [Hannah Rigdon](https://hrigdon98.github.io/) for the laughs needed to get through this lab.
